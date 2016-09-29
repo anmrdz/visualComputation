@@ -1,18 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package workshops;
 
-/**
- *
- * @author Rockero
- */
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import math.geom2d.Point2D;
 import math.geom2d.conic.Circle2D;
@@ -29,9 +19,12 @@ public class WS4 extends PApplet {
     private List<Circle2D> circle2Ds;       // For computing the intersect
     private List<PVector> intersectPoints;
 
+    private int outCircleSize = 70;
+    private int innerCircleSize = 35;
+
     @Override
     public void settings() {
-        size(640, 360);
+        size(600, 600);
     }
 
     @Override
@@ -40,11 +33,25 @@ public class WS4 extends PApplet {
         linePoint1 = new PVector(0, height);
         circles = new ArrayList<>();
         circle2Ds = new ArrayList<>();
-        circles.add(new Circle(new PVector(width / 2, height / 2), 100));
-        circles.add(circles.get(0).spawnChild());
-        circles.add(circles.get(0).spawnChild());
-        circles.add(circles.get(1).spawnChild());
-        circles.add(circles.get(2).spawnChild());
+        circles.add(new Circle(new PVector(width / 2, height / 2), 250));
+        circles.add(new Circle(new PVector((width / 2) - 130, (height / 2) - 50), outCircleSize));
+        circles.add(new Circle(new PVector((width / 2) + 130, (height / 2) - 50), outCircleSize));
+        circles.add(new Circle(new PVector(width / 2, height / 2), outCircleSize));
+        circles.add(new Circle(new PVector(width / 2, (height / 2) - 130), outCircleSize));
+        circles.add(new Circle(new PVector((width / 2) + 65, (height / 2) + 130), outCircleSize));
+        circles.add(new Circle(new PVector((width / 2) - 65, (height / 2) + 130), outCircleSize));
+
+        for (int i = 0; i < 2; i++) {
+            circles.add(new Circle(new PVector(width / 2, (height / 2)
+                    - outCircleSize * 2 + i * innerCircleSize), innerCircleSize));
+            circles.add(new Circle(new PVector((width / 2) + i * innerCircleSize,
+                    (height / 2)), innerCircleSize));
+            circles.add(new Circle(new PVector(width / 2 - 130 - outCircleSize
+                    + i * innerCircleSize, (height / 2) - 50), innerCircleSize));
+            circles.add(new Circle(new PVector(width / 2 + 130 + outCircleSize
+                    - i * innerCircleSize, (height / 2) - 50), innerCircleSize));
+        }
+
         for (Circle circle : circles) {
             circle2Ds.add(new Circle2D(circle.getPos().x, circle.getPos().y, circle.getRadius()));
         }
@@ -62,7 +69,7 @@ public class WS4 extends PApplet {
     }
 
     private void drawLine() {
-        stroke(128);
+        stroke(200);
         strokeWeight(5);
         line(0, height, mouseX, mouseY);
         linePoint1.x = mouseX;
@@ -76,8 +83,8 @@ public class WS4 extends PApplet {
     }
 
     private void getIntersections() {
-        Line2D line
-                = new Line2D(new Point2D(linePoint0.x, linePoint0.y), new Point2D(linePoint1.x, linePoint1.y));
+        Line2D line = new Line2D(new Point2D(linePoint0.x, linePoint0.y),
+                new Point2D(linePoint1.x, linePoint1.y));
         Collection<Point2D> intersections;
         intersectPoints = new ArrayList<>();
         int x, y;
@@ -93,7 +100,8 @@ public class WS4 extends PApplet {
 
     private void drawIntersections() {
         strokeWeight(10);
-        stroke(250);
+        stroke(255, 0, 0);
+        fill(255, 0, 0);
         for (PVector point : intersectPoints) {
             point(point.x, point.y);
         }
@@ -108,32 +116,17 @@ public class WS4 extends PApplet {
 
         private PVector pos;
         private int radius;
-        private int[] colours;
 
         Circle(PVector pos, int radius) {
             this.pos = pos;
             this.radius = radius;
-            Random random = new Random();
-            colours = new int[]{random.nextInt(256), random.nextInt(256), random.nextInt(256)};
         }
 
         void draw(PGraphics pg) {
             pg.strokeWeight(2);
-            pg.stroke(colours[0], colours[1], colours[2]);
-            pg.fill(colours[0], colours[1], colours[2], 50);
+            pg.stroke(255);
+            pg.noFill();
             pg.ellipse(pos.x, pos.y, radius * 2, radius * 2);
-        }
-
-        Circle spawnChild() {
-            Random random = new Random();
-            int childRadius = radius / 2;
-            int xMin = (int) pos.x - radius / 2;
-            int xMax = (int) pos.x + radius / 2;
-            int x = random.nextInt(xMax - xMin) + xMin;
-            int yMin = (int) pos.y - radius / 2;
-            int yMax = (int) pos.y + radius / 2;
-            int y = random.nextInt(yMax - yMin) + yMin;
-            return new Circle(new PVector(x, y), childRadius);
         }
 
         public PVector getPos() {
@@ -150,14 +143,6 @@ public class WS4 extends PApplet {
 
         public void setRadius(int radius) {
             this.radius = radius;
-        }
-
-        public int[] getColours() {
-            return colours;
-        }
-
-        public void setColours(int[] colours) {
-            this.colours = colours;
         }
     }
 
