@@ -1,30 +1,12 @@
 package workshops;
 
-import java.util.ArrayList;
-import processing.core.PApplet;
-import static processing.core.PApplet.asin;
-import static processing.core.PApplet.atan2;
-import static processing.core.PApplet.cos;
-import static processing.core.PApplet.min;
-import static processing.core.PApplet.pow;
-import static processing.core.PApplet.sin;
-import static processing.core.PApplet.sqrt;
 import static processing.core.PConstants.P3D;
-import static processing.core.PConstants.TRIANGLES;
-import static processing.core.PConstants.TWO_PI;
-import processing.core.PVector;
 import remixlab.proscene.Scene;
 
-import java.util.ArrayList;
-import remixlab.proscene.*;
 import processing.core.PApplet;
-import processing.core.PVector;
-import static processing.core.PApplet.min;
-import static processing.core.PApplet.min;
-import static processing.core.PApplet.min;
 
 public class WS7 extends PApplet {
-    
+
     public static void main(String[] args) {
         PApplet.main(new String[]{"workshops.WS7"});
     }
@@ -51,17 +33,29 @@ public class WS7 extends PApplet {
         Point pc1 = new Point(10, 150);
         Point pc2 = new Point(290, 150);
         Point pEnd = new Point(300, 0);
-        
-        
+
+        rectMode(CORNERS);
+
+        float t = 0.01f;
+        Point tmp = new Point(0, 0), next;
         for (int i = 0, z = 0; i < 100; i++, z += 10) {
-        beginShape();
-        vertex(pInit.x, pInit.x, z);
-        bezierVertex(pc1.x, pc1.y, z, pc2.x, pc2.y, z, pEnd.x, pEnd.y, z);
-        //int y = (1 - x)*(1 - x)*point + 2*x*(1 - x)*p1 + x*x*p2;
-        endShape();
+            //System.out.println("d " + tmp.dist(bezier(pInit, pc1, pc2, pEnd, t*i)));
+            next = bezier(pInit, pc1, pc2, pEnd, t * i);
+            rect(tmp.x, tmp.y, next.x + 4, next.y + 4);
+            tmp = next;
         }
     }
-       
+
+    public Point bezier(Point ini, Point pc1, Point pc2, Point end, float t) {
+
+        int x = (int) (ini.x * Math.pow(1 - t, 3) + 3 * pc1.x * t * Math.pow(1 - t, 2)
+                + 3 * pc2.x * t * t * (1 - t) + end.x * t * t * t);
+        int y = (int) (ini.y * Math.pow(1 - t, 3) + 3 * pc1.y * t * Math.pow(1 - t, 2)
+                + 3 * pc2.y * t * t * (1 - t) + end.y * t * t * t);
+
+        return new Point(x, y);
+    }
+
     @Override
     public void mousePressed() {
 
@@ -70,10 +64,15 @@ public class WS7 extends PApplet {
 }
 
 class Point {
+
     int x, y;
 
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public double dist(Point o) {
+        return Math.sqrt(this.x * o.x + this.y * y);
     }
 }
